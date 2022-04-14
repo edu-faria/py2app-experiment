@@ -1,6 +1,7 @@
 import os
 from tkinter import filedialog
 from tkinter import *
+import plotly.express as px
 
 def get_size(start_path):
     global folder_size
@@ -8,24 +9,24 @@ def get_size(start_path):
 
     # Level 1
     dirpath, dirnames, filenames = next(os.walk(start_path))
-    structure_data.append({"path": dirpath, "size": sizing(dirpath)})
+    structure_data.append({"path": dirpath, "size": sizing(dirpath), "parent": "root"})
 
     #for i in range(2): # Going two level deeper
     for item in structure_data:
         #print(item)
         dirpath, dirnames, filenames = next(os.walk(item["path"]))
         for subdir in dirnames:
-            structure_data.append({"path": os.path.join(dirpath, subdir), "size": sizing(os.path.join(dirpath, subdir))})
+            structure_data.append({"path": os.path.join(dirpath, subdir), "size": sizing(os.path.join(dirpath, subdir)), "parent": dirpath})
 
-# [{'path': '/Users/edefari/Documents/temp', 'size': 57497}, 
-#     {'path': '/Users/edefari/Documents/temp/BBB', 'size': 6161}, 
-#     {'path': '/Users/edefari/Documents/temp/CCC', 'size': 6161}, 
-#     {'path': '/Users/edefari/Documents/temp/AAA', 'size': 36966}, 
-#         {'path': '/Users/edefari/Documents/temp/AAA/AA2', 'size': 6161}, 
-#         {'path': '/Users/edefari/Documents/temp/AAA/AA1', 'size': 24644}, 
-#             {'path': '/Users/edefari/Documents/temp/AAA/AA1/A11', 'size': 6161}, 
-#             {'path': '/Users/edefari/Documents/temp/AAA/AA1/A12', 'size': 12322}, 
-#                 {'path': '/Users/edefari/Documents/temp/AAA/AA1/A12/211', 'size': 6161}]
+    # [{'path': '/Users/edefari/Documents/temp', 'size': 57497}, 
+    #     {'path': '/Users/edefari/Documents/temp/BBB', 'size': 6161}, 
+    #     {'path': '/Users/edefari/Documents/temp/CCC', 'size': 6161}, 
+    #     {'path': '/Users/edefari/Documents/temp/AAA', 'size': 36966}, 
+    #         {'path': '/Users/edefari/Documents/temp/AAA/AA2', 'size': 6161}, 
+    #         {'path': '/Users/edefari/Documents/temp/AAA/AA1', 'size': 24644}, 
+    #             {'path': '/Users/edefari/Documents/temp/AAA/AA1/A11', 'size': 6161}, 
+    #             {'path': '/Users/edefari/Documents/temp/AAA/AA1/A12', 'size': 12322}, 
+    #                 {'path': '/Users/edefari/Documents/temp/AAA/AA1/A12/211', 'size': 6161}]
 
 
     # Check dir size
@@ -37,6 +38,7 @@ def get_size(start_path):
         # Include dir, path and size as directory on list
 
     print (structure_data)
+    draw_chart()
 
 
 def sizing(path_to_check):
@@ -56,6 +58,28 @@ def browse_button():
     filename = filedialog.askdirectory()
     folder_path.set(filename)
     get_size(filename) #Calculates the size and refresh the UI
+
+def draw_chart(): # Try to implement other charts such as chart tunnel
+    global structure_data
+    dirs = []
+    sizes = []
+    parents = []
+    for item in structure_data:
+        dirs.append(item["path"])
+        sizes.append(item["size"])
+        parents.append(item["parent"])
+    data = dict(
+        directories = dirs,
+        parent_dir = parents,
+        size_dir = sizes)
+    fig = px.sunburst(
+        data,
+        names='directories',
+        parents='parent_dir',
+        values='size_dir',
+    )
+    fig.show()
+
 
 root = Tk()
 folder_path = StringVar() #Needed to browse directory
