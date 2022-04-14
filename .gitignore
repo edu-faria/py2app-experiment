@@ -1,0 +1,7 @@
+# Ignore Python Virtual Environment
+venv/
+
+# Ignore build files and libraries
+src/.eggs/
+src/build/
+src/dist/
