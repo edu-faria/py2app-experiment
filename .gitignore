@@ -1,7 +1,10 @@
 # Ignore Python Virtual Environment
-venv/
+venv
 
 # Ignore build files and libraries
-src/.eggs/
-src/build/
-src/dist/
+src/.eggs
+src/build
+src/dist
+
+# Ignore mac created .DS_Store file which suchs a lot
+.DS_Store
